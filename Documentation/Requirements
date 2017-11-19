@@ -1,0 +1,14 @@
+Project_Eye Requirements:
+
+- Webserver
+	+ Linux (or any linux branch)
+	+ SBT 2.12
+	+ Java +v1_8_u111 
+	+ MySQL Database (pure MySQL only)
+
+- Server Application
+	+ Linux (or any linux branch)
+	+ QT Libraries (will be added)
+	+ MySQL Database (pure MySQL only)
+	+ OpenVPN
+	+ Various other libraries

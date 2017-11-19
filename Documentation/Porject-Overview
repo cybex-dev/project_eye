@@ -1,0 +1,109 @@
+PROJECT NAME: Project_Eye
+
+Overview of modules & functionality
+===================================
+
+	WEBSERVER
+	---------
+
+	- web server (seperate)
+		+ use play framework for webserver
+		+ handle registration, logins, verifications, password recovery
+		+ handle user account settings
+		+ handle user dashboard, data usage, updates, notifications
+		+ allow various vpn plans, certain settings per plan (custom ip's, custom dns)
+		+ allow payment methods (paypal, mastercard), discounts
+		+ use mailer for communication
+		
+		+ limited functinoality (i.e. register, register & pay for service, view account info, etc) 
+		+ notify when server status changes (optional)
+
+	- web server main
+		+ requires service to run
+		+ handles instance
+
+		+ starts web server
+
+	SERVER APPLICATION
+	------------------
+	
+	- database manager 
+		+ setup database
+		+ setup tables
+		+ setup user access
+		+ process queries (registration, user logins, verifications, )
+		+ manage backups
+
+	- connection manager
+	
+		Uses paranoid protocol: checks and confirms data sent and receieved
+	
+		+ runs the server loop
+		+ handles client authentication, login, registration, connecting requests
+		+ collects statistics about users (login attempts, ip's connecting from)
+
+	- openvpn manager
+		+ starts openvpn service
+		+ creates various vpn profiles
+		+ reports on connected users, data usage
+
+	- server main
+		+ requires service to run
+		+ handles instance
+
+		+ starts database manager
+		+ starts connection manager
+		+ starts openvpn manager
+	
+Interaction & Integration between modules & apps
+================================================
+
+	- Server Application <---> Webserver
+		+ Notifies when active/inactive (how?)
+		+ webserver notifies users who would like to know (all clients, windows, android, etc)
+		
+		
+	- Server Main <---> Connection Manager
+		+ If manager fails to start, server crashes
+		+ Notifies admin(s) per email
+		+ Notifies webserver, server is offline
+		
+	- Server Main <---> Database Manager
+		+ If manager fails to start (is not running), server shuts down
+		+ Notifies admin of db manager failed and shutdown
+		+ Notifies webserver, server is offline
+		
+	- Server Main Init
+		+ Starts all modules, waits for needed modules to emit alive signal before continuing.
+		+ After each module starts, listens for error signal from module.
+		+ Should use notification bus to send messages to and from webserver
+		
+		
+		
+Modules Start procedure
+=======================
+		Server Main:
+			read configs (parameters passed through as arguments take precidence)
+			enable logging (if required, based on configs and arguments)
+			load modules (pass through settings objects to each)
+			check dependencies (main calls each module dependency check)
+			connect signals to slots
+			start modules
+			wait for ready signals from modules
+			after all modules report ready, broadcast go-ahead signal
+			
+		Connection Manager:
+			Receive settings (server address, port)
+			Start server (with settings, if none then use default ?)
+			emit ready signal
+			wait for go-aheah from main app
+		
+			
+			
+			
+		
+		
+Client Application
+==================
+Each client has unique id, on first connect, id is sent to server for authentiation and registering client.
+If id is not present and client attempts to connect, this is a possible hack (can be disabled for custom clients)
