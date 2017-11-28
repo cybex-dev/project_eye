@@ -1,0 +1,207 @@
+PROJECT NAME: Project_Eye
+
+Overview of modules & functionality
+===================================
+
+	WEBSERVER
+	---------
+
+	- web server (seperate)
+		+ use play framework for webserver
+		+ handle registration, logins, verifications, password recovery
+		+ handle user account settings
+		+ handle user dashboard, data usage, updates, notifications
+		+ allow various vpn plans, certain settings per plan (custom ip's, custom dns)
+		+ allow payment methods (paypal, mastercard), discounts
+		+ use mailer for communication
+		
+		+ limited functinoality (i.e. register, register & pay for service, view account info, etc) 
+		+ notify when server status changes (optional)
+
+	- web server main
+		+ requires service to run
+		+ handles instance
+
+		+ starts web server
+
+	SERVER APPLICATION
+	------------------
+	
+	- database manager 
+		+ setup database
+		+ setup tables
+		+ setup user access
+		+ process queries (registration, user logins, verifications, )
+		+ manage backups
+
+	- connection manager
+	
+		Uses paranoid protocol: checks and confirms data sent and receieved
+	
+		+ runs the server loop
+		+ handles client authentication, login, registration, connecting requests
+		+ collects statistics about users (login attempts, ip's connecting from)
+
+	- openvpn manager
+		+ starts openvpn service
+		+ creates various vpn profiles
+		+ reports on connected users, data usage
+
+	- server main
+		+ requires service to run
+		+ handles instance
+
+		+ starts database manager
+		+ starts connection manager
+		+ starts openvpn manager
+	
+Interaction & Integration between modules & apps
+================================================
+
+	- Server App <---> Webserver
+		+ Notifies when active/inactive (how?)
+		+ webserver notifies users who would like to know (all clients, windows, android, etc)
+		
+		
+	- Server App <---> Connection Manager
+		+ If manager fails to start, server crashes
+		+ Notifies admin(s) per email
+		+ Notifies webserver, server is offline
+		
+	- Server App <---> Database Manager
+		+ If manager fails to start (is not running), server shuts down
+		+ Notifies admin of db manager failed and shutdown
+		+ Notifies webserver, server is offline
+		
+	- Server App Init
+		+ Starts all modules, waits for needed modules to emit alive signal before continuing.
+		+ After each module starts, listens for error signal from module.
+		+ Should use notification bus to send messages to and from webserver
+		
+	- Server Main
+		+ Starts ServerApp
+		
+		
+		
+Application procedure
+=======================
+		Server Main:
+			Reads args, parses args & determines if they are valid
+			Start ServerApp with args
+
+		Server App:
+			read configs (parameters passed through as arguments take precidence)
+			enable logging (if required, based on configs and arguments)
+			load modules (pass through settings objects to each)
+			check dependencies (main calls each module dependency check)
+			connect signals to slots
+			start modules
+			wait for ready signals from modules (use s&s mech)
+			after all modules report ready, broadcast go-ahead signal
+			
+		Connection Manager:
+			Receive settings (server address, port)
+			Start server (with settings, if none then use default ?)
+			pause accepting connections & 
+				emit ready signal
+			wait for go-aheah from main app
+				resume accepting connections
+				
+			new connection socket passed to client connection extending a thread
+				paranoid protocl (server ed) comminicates with client
+				
+				if connect to vpn signal emitted:
+					- check if user is enabled, allowed, has days left, etc.
+					- check which type of package the user wants : Secure/Download/Normal/Gaming, etc
+					- check with database any specific requirements : 
+						- if custom config required
+							- ip range/subnet/dns requirements (this requires a new openvpn config)
+							- notify openvpn manager to generate config
+					- sends client config to user
+					- allows client to connect
+					- connects monitor signal (data usage, speed)
+					
+			Client Servicing
+				monitoring data usage - see openvpn-status output
+				notifying of expiration (set by admin)
+				auto disconnect when expired
+					 
+		Database Manager:
+			Checks if MySQL is available
+			
+			connects to database
+			Checks if database exists, else generate them
+			Checks if user exists, else generate them
+			Checks if tables exist, else generate them
+			emit ready signal
+			
+			wait for query to process
+			
+			wait for shutdown signal
+				discounnects from database
+				
+		Openvpn Manager:
+			Checks if openvpn exists
+			
+			Waits for CreateVConfig signal
+				setup config file 
+					- recieve config settings from signal
+					- store config info in database (name, encryption type, ipp range, dns, etc.)
+					- start config
+					- check if config is running
+					- generate client config
+					- notify clientConfigCreated with config id
+					
+					
+					
+					
+		// Paranoid protocol uses a paranoid implementation of sending and receiving data. It assumes that data can always be manupulated by an attack. 
+		// Thus data sent from the client is always checked, stored and confirmed
+		
+		Paranoid Protocol (Server Ed)
+			Installation requirement:
+				generate public & private key to use for communication. (Save this in settings directory)
+			
+			Protocol Requirement:
+				AES Encryption (256) provided by crypto++
+				
+			Protocol Procedure (activates when client desires to login):
+				1. Client greeting (identify client software id with 
+		
+			1. Client sends greeting when alive with public key: Either 
+				"Hello, Stranger"  - Server stores public key as new client in database
+				or 
+				"I am XYZ" 	- ID is checked in database, if it exists, then the username can be confirmed. If a new user logs in, this client id is stored with the user login, can be used to determine who uses the same client
+							- If no ID is found, most probably means a hack or attack may be occuring, since data loss in the database is less likely than someone faking an ID.
+							
+					Protocol has default public/private key (can be changed in program args). This is used to encrypt/decrypt initial data conversation (ID Greeting)
+							
+			2. Client sends login details & public key, Check public key exists
+				- If key exists, confirm same key as stored in database. 
+						- If same, confirm login details
+						- If not the same, store new ID with login details
+				- If ID not exist
+						- Confirm login details
+						
+				(Use AES Encrypting\Decryoting within paranoid protocol.)
+				- Store ID with login username and time of login, ip, etc.
+				- Generate server & client communication keys, send server's public key to client
+				- Client generates 
+			
+			3. 
+
+
+Webserver Configurations:
+	VPN Settings
+		- Package types (Download, Secure, etc)
+	
+	General Settings
+		- Expiry auto disconnect (disconnect at end of day?)
+		- Allow for custom configs
+		- 
+		
+		
+Client Application
+==================
+Each client has unique id, on first connect, id is sent to server for authentiation and registering client.
+If id is not present and client attempts to connect, this is a possible hack (can be disabled for custom clients)
