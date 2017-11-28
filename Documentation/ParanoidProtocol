@@ -1,0 +1,35 @@
+// Paranoid protocol uses a paranoid implementation of sending and receiving data. It assumes that data can always be manupulated by an attack. 
+// Thus data sent from the client is always checked, stored and confirmed
+
+Paranoid Conversation:
+
+Installation requirement:
+	generate public & private key to use for communication. (Save this in settings directory)
+
+Protocol Requirement:
+	AES Encryption (256) provided by crypto++
+
+Protocol Procedure (activates when client desires to login):
+	1. Client greeting (identify client software id with randomly generated
+
+1. Client sends greeting when alive with public key: Either 
+	"Hello, Stranger"  - Server stores public key as new client in database
+	or 
+	"I am XYZ" 	- ID is checked in database, if it exists, then the username can be confirmed. If a new user logs in, this client id is stored with the user login, can be used to determine who uses the same client
+				- If no ID is found, most probably means a hack or attack may be occuring, since data loss in the database is less likely than someone faking an ID.
+
+		Protocol has default public/private key (can be changed in program args). This is used to encrypt/decrypt initial data conversation (ID Greeting)
+
+2. Client sends login details & public key, Check public key exists
+	- If key exists, confirm same key as stored in database. 
+			- If same, confirm login details
+			- If not the same, store new ID with login details
+	- If ID not exist
+			- Confirm login details
+
+	(Use AES Encrypting\Decryoting within paranoid protocol.)
+	- Store ID with login username and time of login, ip, etc.
+	- Generate server & client communication keys, send server's public key to client
+	- Client generates 
+
+3. 
