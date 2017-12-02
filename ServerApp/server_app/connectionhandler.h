@@ -38,16 +38,20 @@ class ConnectionHandler:
 public:
     ConnectionHandler();
     ConnectionHandler(QHostAddress hostAddress, int server_port);
+    void init();
 
     enum class ConnectionError {
         UnknownError, SocketError, PortUnavailableError, AlreadyRunningError, PermissionError
     };
 
 private:
-    QList<ClientConnection> *clientConnections;
+    QList<ClientConnection*> clientConnections;
     QHostAddress hostAddress = QHostAddress::Any;
     int hostPort = 5050;
     QTcpServer *serverSocket;
+
+    void run();
+    void newConnectionHandler();
 
 private slots:
     void goAhead();

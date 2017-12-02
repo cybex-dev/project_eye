@@ -7,6 +7,7 @@ class ClientConnection : public QThread
 {
 public:
     ClientConnection();
+    void run();
 };
 
 #endif // CLIENTCONNECTION_H

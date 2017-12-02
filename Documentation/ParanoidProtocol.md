@@ -1,16 +1,27 @@
-// Paranoid protocol uses a paranoid implementation of sending and receiving data. It assumes that data can always be manupulated by an attack. 
+// Paranoid protocol uses a paranoid implementation of sending and receiving data. It assumes that data can always be manipulated, or changed by cause of an attack. Thus, all data is checked client & server side as far as possible
 // Thus data sent from the client is always checked, stored and confirmed
-
-Paranoid Conversation:
 
 Installation requirement:
 	generate public & private key to use for communication. (Save this in settings directory)
 
 Protocol Requirement:
 	AES Encryption (256) provided by crypto++
-
-Protocol Procedure (activates when client desires to login):
-	1. Client greeting (identify client software id with randomly generated
+	
+	
+NOTE:
+	// data between server and client never send plain variables which can be manipulated. 
+	i.e. Client: Are the credentials valid, Server: true/false
+	
+	Since these values can be manipulated, the server should respond with crucial information which cannot be manually created. 
+	i.e. Client identifies itself, server responds with: public key if valid or an "INVALID" if not valid
+			if id is unique: public key for encryption
+			if not unique: 
+	
+Paranoid Conversation/Procedure(activates when client desires to login):
+	1. 	C: Client greeting (identify client software id with randomly generated hash*)
+		S: Server responds by sending a list of vpn ip
+	
+	*  see client documentation, a 16 char (128 bit) string generated with characters [a-zA-Z-9_+]
 
 1. Client sends greeting when alive with public key: Either 
 	"Hello, Stranger"  - Server stores public key as new client in database

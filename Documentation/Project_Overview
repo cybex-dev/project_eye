@@ -167,3 +167,7 @@ Client Application
 ==================
 Each client has unique id, on first connect, id is sent to server for authentiation and registering client.
 If id is not present and client attempts to connect, this is a possible hack (can be disabled for custom clients)
+
+
+Installation:
+	Client ID generated on installation: a 16 character (128-bit) string defined by [a-zA-Z0-9+_] (64 chars) ID. Chances of a duplicate are, not to be worried about

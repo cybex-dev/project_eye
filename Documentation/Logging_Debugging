@@ -1,0 +1,20 @@
+Logging & Debugging Requirements
+
+Verbosity Levels:
+	1: Least Amount of output. Show server start time and critical changes
+	4: 1 & Detailed system information, various states & changes occuring
+	7: 4 & New clients connecting & disconnecting, ?
+	
+enum Verbosity {
+	Critical = 1,   //fatal, critical, warning, info[1], debug[1]
+	Info = 4,       //1, info[4]
+	Detail = 7      //4, info[7]
+};
+
+Default verbosity level == 4
+default bool debugging = false
+
+Should be able to provide custom log locations.
+
+Format:
+	TIME - [TYPE] CATEGORY: MESSAGE

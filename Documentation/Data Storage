@@ -1,0 +1,11 @@
+2 Configs locations:
+
+Application Specific ( /etc/project_eye/app_settings )
+///stores data about the current application instance, custom setttings, etc (high level settings) - changes frequently
+	- store app name, app domain, app org
+
+Config Data ( /etc/project_eye/config_settings )
+//stores data about the application & server runtime configs, log levels, etc (low level settings) - changes rarely
+	- Logging rules: verbosity level, debugging enabled
+	- load environment variable QT_MESSAGE_PATTERN="%{time} %{category}: %{message}"
+

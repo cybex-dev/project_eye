@@ -28,10 +28,8 @@ void ServerApp::run(){
 }
 
 void ServerApp::readConfigs(){
-    qInfo(serverapp_main) << "::Loading Config : server-info";
-    QSettings settings_serverinfo = QSettings("server-info", QSettings::IniFormat);
     parseServerInfo(&settings_serverinfo);
-    qInfo(serverapp_main) << ":: Loading Default Config";
+    qInfo(serverapp_main) << ":: Loading Default Config";w
     QSettings settings_system = QSettings(QSettings::Format::IniFormat, QSettings::Scope::SystemScope, QCoreApplication::organizationName(), QCoreApplication::applicationName());
     
     QStringList list = settings_system.allKeys();

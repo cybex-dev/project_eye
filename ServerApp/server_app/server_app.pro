@@ -1,4 +1,4 @@
-QT += core
+QT += core network
 QT -= gui
 
 CONFIG += c++11
@@ -14,7 +14,10 @@ SOURCES += main.cpp \
     connectionhandler.cpp \
     main.cpp \
     paranoidprotocol.cpp \
-    serverapp.cpp
+    serverapp.cpp \
+    logger.cpp \
+    global.cpp \
+    settings.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -42,4 +45,7 @@ HEADERS += \
     _onreadylistener.h \
     _onshutdownlistener.h \
     paranoidprotocol.h \
-    serverapp.h
+    serverapp.h \
+    logger.h \
+    global.h \
+    settings.h
