@@ -1,4 +1,10 @@
 # project_eye
+
+### Update
+I will be continuing with development on this in the near future. Have been busy with other projects
+
+## Watch this space :)
+
 A All-in-One VPN solution for Linux servers with server and web implementation.
 
 The purpose of this project allows a business/firm to easily run a vpn from any location. The software offers features:
